@@ -14,11 +14,15 @@
 
 <!-- for GitHub Copilot review rule -->
 
+  <!-- 各言語の一般的な命名規則と比較してください。 -->
+  <!-- C#のコードをレビューをする時は以下のサイトを参考にC#13の文法で判断してコメントし、コメントにはC#のどのバージョンまで知っているかを書いてください。 -->
+  <!-- https://learn.microsoft.com/ja-jp/dotnet/csharp/whats-new/csharp-11 -->
+  <!-- https://learn.microsoft.com/ja-jp/dotnet/csharp/whats-new/csharp-12 -->
+  <!-- https://learn.microsoft.com/ja-jp/dotnet/csharp/whats-new/csharp-13 -->
+  <!-- https://learn.microsoft.com/ja-jp/dotnet/csharp/whats-new/csharp-14 -->
+
 - 指摘された側が受け入れやすい様に柔らかい表現を心がけましょう。
 - レビューする際には、以下の prefix(接頭辞)を付けるようにましょう。
-  <!-- 最新のC#の書き方でレビューしてください。 -->
-  <!-- C#書き方についてのコメントする時は基準としたC#バージョンを記述してください。 -->
-  <!-- 各言語の一般的な命名規則と比較してください。 -->
   - [must] → 必ず変更してね
   - [imo] → 私はこう思うけど修正必須ではないよ(in my opinion)
   - [nits] → ささいな指摘(nitpick)

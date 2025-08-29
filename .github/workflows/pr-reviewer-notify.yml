@@ -1,8 +1,20 @@
 name: PRレビュアーのアサイン通知（Teamsにチャットを送信）
 
 on:
-  pull_request:
-    types: [review_requested]
+  workflow_call:
+    inputs:
+      pr_url:
+        required: true
+        type: string
+      pr_title:
+        required: true
+        type: string
+      reviewer:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
 
 jobs:
   notify-teams:
@@ -11,11 +23,12 @@ jobs:
       - name: GitHubユーザー名をメールアドレスに変換してTeamsの個人チャットへ通知する
         env:
           WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          REVIEWER_LOGIN: ${{ github.event.requested_reviewer.login }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          REPO_NAME: ${{ github.repository }}
         run: |
+          PR_URL="${{ inputs.pr_url }}"
+          PR_TITLE="${{ inputs.pr_title }}"
+          REVIEWER_LOGIN="${{ inputs.reviewer }}"
+          REPO_NAME="${{ inputs.repository }}"
+
           echo "Reviewer username: $REVIEWER_LOGIN"
 
           # kentem- から始まっていない場合は通知をスキップ

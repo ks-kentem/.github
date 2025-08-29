@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: GitHubユーザー名をメールアドレスに変換してTeamsの個人チャットへ通知する
         env:
-          WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.PR_ASSIGN_TEAMS_WEBHOOK_URL }}
         run: |
           PR_URL="${{ inputs.pr_url }}"
           PR_TITLE="${{ inputs.pr_title }}"

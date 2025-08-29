@@ -15,21 +15,22 @@ on:
       repository:
         required: true
         type: string
-      webhook_url:
+    secrets:
+      WEBHOOK_URL:
         required: true
-        type: string
 
 jobs:
   notify-teams:
     runs-on: ubuntu-latest
     steps:
       - name: GitHubユーザー名をメールアドレスに変換してTeamsの個人チャットへ通知する
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: |
           PR_URL="${{ inputs.pr_url }}"
           PR_TITLE="${{ inputs.pr_title }}"
           REVIEWER_LOGIN="${{ inputs.reviewer }}"
           REPO_NAME="${{ inputs.repository }}"
-          WEBHOOK_URL="${{ inputs.webhook_url }}"
 
           echo "Reviewer username: $REVIEWER_LOGIN"
 

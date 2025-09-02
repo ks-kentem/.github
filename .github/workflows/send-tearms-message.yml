@@ -3,7 +3,7 @@ name: Teamsにチャットを送信
 on:
   workflow_call:
     inputs:
-      send_to:
+      send_to_username:
         required: true
         type: string
       title:
@@ -33,7 +33,7 @@ jobs:
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: |
-          SEND_TO="${{ inputs.send_to }}"
+          USERNAME="${{ inputs.send_to_username }}"
           TITLE="${{ inputs.title }}"
           REPOSITORY="${{ inputs.repository }}"
           REPOSITORY_URL="https://github.com/ks-kentem/${{ inputs.repository }}"
@@ -41,17 +41,17 @@ jobs:
           EVENT_URL="${{ inputs.event_url }}"
           MESSAGE="${{ inputs.message }}"
 
-          echo "Username: $SEND_TO"
+          echo "Username: $USERNAME"
 
           # kentem- から始まっていない場合は通知をスキップ
-          if [[ "$SEND_TO" != kentem-* ]]; then
-            echo "kentem-から始まっていないユーザーなので通知スキップ: $SEND_TO"
+          if [[ "$USERNAME" != kentem-* ]]; then
+            echo "kentem-から始まっていないユーザーなので通知スキップ: $USERNAME"
             exit 0
           fi
 
           # 「kentem-」のプレフィックスを削除（最初のハイフン以降を取得）
           # 例: kentem-ke-kudo → ke-kudo
-          USER_PART="${SEND_TO#*-}"
+          USER_PART="${USERNAME#*-}"
 
           # ドメインを付けてメールアドレス完成
           EMAIL="${USER_PART}@kentem.co.jp"

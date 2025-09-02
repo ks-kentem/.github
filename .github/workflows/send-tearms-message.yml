@@ -63,6 +63,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d @- <<EOF
           {
+            "send_to": "$EMAIL",
             "title": "$TITLE",
             "repository": "$REPOSITORY",
             "repository_url": "$REPOSITORY_URL",

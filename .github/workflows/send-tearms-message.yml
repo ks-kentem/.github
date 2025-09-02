@@ -3,8 +3,11 @@ name: Teamsにチャットを送信
 on:
   workflow_call:
     inputs:
+      send_to_email:
+        required: false
+        type: string
       send_to_username:
-        required: true
+        required: false
         type: string
       title:
         required: true
@@ -29,32 +32,47 @@ jobs:
   notify-teams:
     runs-on: ubuntu-latest
     steps:
+      - name: 送信先（メールアドレス）を設定する
+        id: set_email
+        run: |
+          # inputs.send_to_emailが設定されていればそれを使用
+          EMAIL="${{ inputs.send_to_email }}"
+          
+          # メールアドレスが指定されていなければユーザー名から推測する
+          if [[ -z "$EMAIL" ]]; then
+            echo "メールアドレスが指定されていないため、ユーザー名から推測します。"
+            USERNAME="${{ inputs.send_to_username }}"
+            
+            # kentem- から始まっている場合はメールアドレスに変換
+            if [[ "$USERNAME" == kentem-* ]]; then
+              USER_PART="${USERNAME#*-}"
+              EMAIL="${USER_PART}@kentem.co.jp"
+            fi
+          fi
+          
+          # メールアドレスが最終的に見つからなければ、ジョブをスキップする
+          if [[ -z "$EMAIL" ]]; then
+            echo "::notice::kentem-から始まっていないユーザーなので通知をスキップします: $USERNAME"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::生成されたメールアドレス: $EMAIL"
+            echo "email=$EMAIL" >> "$GITHUB_OUTPUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
       - name: GitHubユーザー名をメールアドレスに変換してTeamsの個人チャットへ通知する
+        if: steps.set_email.outputs.skip == 'false'
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: |
-          USERNAME="${{ inputs.send_to_username }}"
+          EMAIL="${{ steps.set_email.outputs.email }}"
           TITLE="${{ inputs.title }}"
           REPOSITORY="${{ inputs.repository }}"
           REPOSITORY_URL="https://github.com/ks-kentem/${{ inputs.repository }}"
           EVENT="${{ inputs.event }}"
           EVENT_URL="${{ inputs.event_url }}"
           MESSAGE="${{ inputs.message }}"
-
-          echo "Username: $USERNAME"
-
-          # kentem- から始まっていない場合は通知をスキップ
-          if [[ "$USERNAME" != kentem-* ]]; then
-            echo "kentem-から始まっていないユーザーなので通知スキップ: $USERNAME"
-            exit 0
-          fi
-
-          # 「kentem-」のプレフィックスを削除（最初のハイフン以降を取得）
-          # 例: kentem-ke-kudo → ke-kudo
-          USER_PART="${USERNAME#*-}"
-
-          # ドメインを付けてメールアドレス完成
-          EMAIL="${USER_PART}@kentem.co.jp"
 
           echo "Generated email: $EMAIL"
 
